@@ -47,6 +47,11 @@ class SelectDialog<T> extends StatefulWidget {
   final BoxConstraints? constraints;
   final TextEditingController? findController;
 
+  ///see [AlertDialog]
+  final List<Widget>? actions;
+
+  final EdgeInsets? padding;
+
   const SelectDialog({
     Key? key,
     this.itemsList,
@@ -71,10 +76,11 @@ class SelectDialog<T> extends StatefulWidget {
     this.searchBoxMinLines = 1,
     this.findController,
     this.showSelectedItemsFirst = false,
+    this.actions,
+    this.padding,
   }) : super(key: key);
 
-  static Future<T?> showModal<T>(
-    BuildContext context, {
+  static Future<T?> showModal<T>(BuildContext context, {
     List<T>? items,
     Object? label,
     T? selectedValue,
@@ -100,12 +106,14 @@ class SelectDialog<T> extends StatefulWidget {
     TextEditingController? findController,
     bool useRootNavigator = false,
     bool showSelectedItemsFirst = false,
+    final List<Widget>? actions,
+    final EdgeInsets? padding,
   }) {
     Widget? labelWidget;
     if (label is Widget) {
       labelWidget = label;
-    } else if (label is Widget) {
-      labelWidget = Text(label as String, style: titleStyle);
+    } else if (label is String) {
+      labelWidget = Text(label, style: titleStyle);
     }
 
     return showDialog<T>(
@@ -115,6 +123,7 @@ class SelectDialog<T> extends StatefulWidget {
         return AlertDialog(
           backgroundColor: backgroundColor,
           title: labelWidget,
+          contentPadding: padding,
           content: SelectDialog<T>(
             selectedValue: selectedValue,
             multipleSelectedValues: multipleSelectedValues,
@@ -138,7 +147,9 @@ class SelectDialog<T> extends StatefulWidget {
             searchBoxMinLines: searchBoxMinLines,
             findController: findController,
             showSelectedItemsFirst: showSelectedItemsFirst,
+            padding: padding,
           ),
+          actions: actions,
         );
       },
     );
@@ -192,8 +203,7 @@ class _SelectDialogState<T> extends State<SelectDialog<T>> {
       );
 
   SelectOneItemBuilderType<T> get itemBuilder {
-    return widget.itemBuilder ??
-        (context, item, isSelected) => ListTile(title: Text(item.toString()), selected: isSelected);
+    return widget.itemBuilder ?? (context, item, isSelected) => ListTile(title: Text(item.toString()), selected: isSelected);
   }
 
   ButtonBuilderType get okButtonBuilder {
